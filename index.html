@@ -10,6 +10,17 @@
         #map {
             height: 100vh;
             width: 100%;
+            z-index: 100;
+        }
+        #area {
+            z-index: 50000;
+            background-color: green;
+            color: aliceblue;
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            padding: 10px;
+            border-radius: 10px;
         }
     </style>
 
@@ -20,11 +31,14 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
+
+        <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
 </head>
 
 <body>
     <div id="map" />
-
+    <p id="area" >Superficie : 0 m2 </p>
 
     <script >
         let V;
@@ -62,6 +76,8 @@
             var polygonPoints = [];
             var polygon;
             polygon = V.polygon(polygonPoints, { color: "red" }).addTo(map);
+
+            var areaHTML = document.getElementById("area")
             map.on("click", function (e) {
                 if (window["drawing"] === false) return;
                 // Retrieve the coordinates of the clicked point
@@ -72,6 +88,31 @@
                 // Store the retrieved coordinates in an array
                 polygon.setLatLngs(polygonPoints);
                 polygon.addTo(map);
+
+                let myPolygon = {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {
+                            "coordinates": [polygonPoints],
+                            "type": "Polygon"
+                        }
+                        }
+                    ]
+                }
+
+                const area = turf.area(myPolygon);
+                const rounded_area = Math.round(area * 100) / 100;
+                if(rounded_area > 1000000) {
+                    areaHTML.innerHTML = `Superficie: ${(rounded_area/1000000).toFixed(5)} km²`
+                } else if(rounded_area > 10000) {
+                    areaHTML.innerHTML = `Superficie: ${(rounded_area/10000).toFixed(2)} ha`
+                } else {
+                    areaHTML.innerHTML = `Superficie: ${rounded_area.toFixed(2)} m²`
+                }
+                
                 window["polygons"] = polygonPoints;
                 // Use the array of coordinates to draw a polygon on the map instance
             });
@@ -86,6 +127,26 @@
                 polygon.setLatLngs(polygonPoints);
                 window["polygons"] = polygonPoints;
             };
+
+            function computeArea(e) {
+                console.log("computeArea")
+                if (polygonPoints.length > 0) {
+                    const area = turf.area(myPolygon);
+                    const rounded_area = Math.round(area * 100) / 100;
+
+                    if(rounded_area > 1000000) {
+
+                    }
+                    console.log(rounded_area, " m2")
+                    // answer.innerHTML = `<p><strong>${rounded_area}</strong></p><p>square meters</p>`;
+                } else {
+                    answer.innerHTML = '';
+                    if (e.type !== 'draw.delete')
+                    alert('Click the map to draw a polygon.');
+                }
+            }
+
+            
 
             //window["res"] = "nice";
     
