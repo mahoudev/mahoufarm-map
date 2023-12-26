@@ -18,7 +18,7 @@
             color: aliceblue;
             position: absolute;
             bottom: 20px;
-            left: 50px;
+            left: 10px;
             padding: 10px;
             border-radius: 10px;
         }
@@ -60,9 +60,7 @@
             V.tileLayer(tile, {
                 accessToken: "pk.eyJ1Ijoic3luY3luYXR5IiwiYSI6ImNscDZ2ZW00cTF4aHQycnFvbDZsdGpmejEifQ.DbipEmVV5FTXccLV1x6gjg",
                 foo: "bar",
-                id: "mapbox/satellite-v9",
-                attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                id: "mapbox/satellite-streets-v12"
             }).addTo(map);
 
             // V.tileLayer("https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
@@ -84,7 +82,7 @@
                 var lat = e.latlng.lat;
                 var lng = e.latlng.lng;
 
-                polygonPoints.push([lat, lng]);
+                polygonPoints.push([lng, lat]); // According to GEOJSON format
                 // Store the retrieved coordinates in an array
                 polygon.setLatLngs(polygonPoints);
                 polygon.addTo(map);
